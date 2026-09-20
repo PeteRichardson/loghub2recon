@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # One job rather than four parallel ones: each would pay the toolchain
+  # install and cache restore again, for a suite that finishes in under a
+  # second. The steps run in increasing order of cost, so a formatting slip
+  # fails before anything is compiled.
+  check:
+    name: fmt, clippy, test, build
+    # ubuntu-latest, unlike recon's macOS-only CI. This tool has no terminal
+    # and no cfg(target_os) anywhere; the one platform assumption it makes is
+    # `curl` on the PATH, which the Ubuntu runner has. Linux runners also bill
+    # at a tenth of the macOS rate.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Tracks stable rather than pinning, and there is deliberately no
+      # rust-toolchain.toml: pinning would bind contributors' local builds
+      # too, which is heavier than CI needs. Edition 2024 sets the real floor
+      # at 1.85, and stable is always well past it.
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --check
+
+      # No `-W clippy::pedantic` here on purpose. The pedantic group is turned
+      # on in Cargo.toml's `[lints.clippy]`, so `-D warnings` promotes it to a
+      # failure without the flag — and a plain local `cargo clippy` then
+      # enforces exactly what this step does. A lint level that exists only on
+      # the CI command line is one you find out you have broken after pushing.
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      # The suite is offline by design. Nothing here fetches from loghub: the
+      # conversion is tested against templates written into the test itself,
+      # so CI does not fail on a day GitHub's raw host is slow.
+      - name: Test
+        run: cargo test
+
+      - name: Build
+        run: cargo build --release

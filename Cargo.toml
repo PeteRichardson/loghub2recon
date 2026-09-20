@@ -1,0 +1,49 @@
+[package]
+name = "loghub2recon"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Convert a loghub event-template CSV into a recon filter set"
+repository = "https://github.com/PeteRichardson/loghub2recon"
+
+# Pedantic is on, and CI's `-D warnings` turns every one of these into a build
+# failure — the same gate recon uses, so that code moving in either direction
+# meets one standard. The list of exceptions is empty; anything that appears
+# here is genuinely new, and needs a reason with it.
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+[dependencies]
+# The CLI. `wrap_help` costs one dependency, `terminal_size`, and is what makes
+# clap wrap `--help` at the terminal's width instead of emitting lines a
+# terminal then soft-wraps mid-word.
+clap = { version = "4.6.6", features = ["derive", "wrap_help"] }
+color-eyre = "0.6.5"
+
+# A real CSV parser, not a line reader, and this is not fussiness: two Mac
+# templates hold an embedded newline, so `Mac_2k.log_templates.csv` has more
+# physical lines than rows, and a quoted field in Thunderbird's corrected file
+# spans six of them. `docs/loghub-template-format.md` measures what a line
+# reader costs. `default-features = false` drops `serde`, which the reader does
+# not use: it finds the `EventTemplate` column by name, because some producers
+# write a third `Occurrences` column and a struct would not.
+csv = { version = "1.4.0", default-features = false }
+
+# The same engine recon compiles a `pattern` with, so a pattern this tool
+# accepts is one recon accepts. The version floor matters more than it looks:
+# `validate` is this repo's stand-in for recon's own loader, and the two have
+# to agree about what compiles.
+regex = "1"
+
+# Emitting and re-reading `filters.toml`. `toml_edit` writes it, because it is
+# the only way to get a single-quoted literal string — which is what lets a
+# regex go in verbatim with no `\\` tax. `toml` reads it back in `validate`,
+# with `default-features = false` dropping the `display` feature, which is the
+# serializer: this tool must never have two ways to write the same file.
+toml_edit = "0.25.13"
+toml = { version = "1.1.4", default-features = false, features = [
+    "parse",
+    "serde",
+    "std",
+] }
+serde = { version = "1.0.229", features = ["derive"] }

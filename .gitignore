@@ -1,0 +1,5 @@
+/target
+
+# What the tool writes. A conversion belongs in ~/.config/recon/filters.toml,
+# not checked in beside the converter.
+*-filters.toml
