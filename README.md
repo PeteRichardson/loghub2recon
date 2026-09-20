@@ -118,9 +118,41 @@ reference: how to read a loghub template file, what is surprising about it,
 which rows in the shipped data are faulty, and how the conversion recipe was
 measured.
 
-## Licence
+## License
 
-MIT — see [LICENSE](LICENSE).
+This tool is MIT — see [LICENSE](LICENSE). It bundles no loghub data: it
+fetches a CSV at the moment you ask for one, or reads a copy you already have.
 
-loghub's own data is licensed for research and academic use and asks for a
-citation of the loghub repository. That applies to a converted filter set too.
+What it does carry is about twenty short excerpts — event templates and the
+raw log lines they match — in the tests and in `docs/`, as worked examples.
+Those are fixtures, not a dataset, but they are loghub's work and this
+repository would have nothing to say without it.
+
+## Citing loghub
+
+[loghub's terms][loghub-license] make the datasets free for research and
+academic work on one condition: that any use or distribution refers to the
+repository URL and cites their papers. The repository asks for two.
+
+> **Loghub** — Jieming Zhu, Shilin He, Pinjia He, Jinyang Liu, Michael R. Lyu.
+> [Loghub: A Large Collection of System Log Datasets for AI-driven Log
+> Analytics](https://arxiv.org/abs/2008.06448). IEEE International Symposium on
+> Software Reliability Engineering (ISSRE), 2023.
+>
+> **Loghub-2.0** — Zhihan Jiang, Jinyang Liu, Junjie Huang, Yichen Li, Yintong
+> Huo, Jiazhen Gu, Zhuangbin Chen, Jieming Zhu, Michael R. Lyu. [A Large-scale
+> Evaluation for Log Parsing Techniques: How Far are
+> We?](https://arxiv.org/abs/2308.10828). ACM SIGSOFT International Symposium
+> on Software Testing and Analysis (ISSTA), 2024.
+
+**A converted filter set is derived from their data, so the condition follows
+it.** Every file this tool writes carries the repository URL and the Loghub
+citation in its header comment, so a set that is passed on still says where it
+came from. Keep that comment.
+
+If you work from the *corrected* templates — the `_templates_corrected.csv`
+files that [`docs/loghub-template-format.md`](docs/loghub-template-format.md)
+analyses — those are a third group's work again, and the document names the
+paper.
+
+[loghub-license]: https://github.com/logpai/loghub/blob/master/LICENSE

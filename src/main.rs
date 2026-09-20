@@ -584,9 +584,16 @@ fn emit(set: &str, filters: &[(String, String)], source: &Source) -> Result<Stri
 ///
 /// Prepended to the rendered document rather than set as the root table's
 /// decor: `toml_edit` drops a prefix on an implicit table, and the header has
-/// to survive. It says three things, because a converted set is read months
-/// after it is made: where it came from, what to do with it, and which
-/// one-line edits the tool deliberately did not make.
+/// to survive. It says four things, because a converted set is read months
+/// after it is made and may by then have been passed to someone else: where it
+/// came from, what to do with it, which one-line edits the tool deliberately
+/// did not make, and who to credit.
+///
+/// The citation is not decoration. loghub's data is free for research and
+/// academic work *on the condition* that any use of it refers to the
+/// repository and cites the paper, and a filter set is derived from that data.
+/// This comment is the only place the condition can travel, because the file
+/// is meant to be pasted into someone's `filters.toml` and then forgotten.
 fn header(set: &str, count: usize, source: &Source) -> String {
     let origin = source.describe();
     format!(
@@ -608,8 +615,13 @@ fn header(set: &str, count: usize, source: &Source) -> String {
 #   [sets.{set}.profiles]
 #   default = ["<a filter's name>", ...]   # applied when the set is enabled
 #
-# loghub's data is licensed for research and academic use, and asks for a
-# citation of https://github.com/logpai/loghub.
+# These filters are derived from loghub's data, which is free for research
+# and academic work on the condition that any use refers to the repository
+# and cites the loghub paper. Keep this notice with the set:
+#   https://github.com/logpai/loghub
+#   Jieming Zhu, Shilin He, Pinjia He, Jinyang Liu, Michael R. Lyu. Loghub: A
+#   Large Collection of System Log Datasets for AI-driven Log Analytics. ISSRE
+#   2023. https://arxiv.org/abs/2008.06448
 
 "#
     )
